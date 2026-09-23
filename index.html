@@ -231,8 +231,21 @@ footer b{color:var(--petroleo)}
 .sendst.bad{background:var(--tint-m);color:var(--magenta)}
 .logocard{background:#fff;border-radius:14px;padding:6px 12px;display:inline-flex;align-items:center;box-shadow:0 1px 0 var(--line)}
 .logocard img{height:96px;width:auto;display:block}
+.doc .cover .logocard{display:inline-block;line-height:0}
 .doc .cover .logocard img{height:110px}
 @media (max-width:480px){.logocard img{height:72px}}
+/* Vista de propuesta compartida */
+.shared .wrap,.shared .mbar{display:none!important}
+.shared body{background:var(--bg)}
+.shared .overlay{position:static;background:none;padding:16px;overflow:visible}
+.shared .modal{box-shadow:var(--shadow);margin:0 auto}
+.shared .x{display:none}
+.shared #pdf{background:var(--petroleo);color:var(--on-accent)}
+/* Modo PDF: colores claros fijos */
+.pdfmode .doc{--ink:#252525;--ink-2:#48464D;--muted:#737273;--line:#E4E2E8;--surface:#fff;--petroleo:#00616F;--magenta:#CF00A5;--morado:#921C95;--tint-p:rgba(0,97,111,.07);--tint-m:rgba(207,0,165,.07);--head:#00616F;background:#fff;color:#252525}
+.pdfmode .doc section{break-inside:avoid}
+.coverlogo{background:#fff;border-radius:14px;padding:8px 12px;width:206px}
+.coverlogo img{display:block;width:182px;height:110px;max-width:none}
 </style>
 </head>
 <body>
@@ -356,7 +369,9 @@ const CONFIG = {
   /* Envío automático a WhatsApp y correo del cliente (solo versión web): URL del webhook de Make */
   webhook: "",
   /* Mientras Make no esté conectado: te llega un aviso por correo con cada cotización (FormSubmit) */
-  avisoCorreo: "esro.yesenia@gmail.com",
+  avisoCorreo: "confin.consultora.ltda@gmail.com",
+  /* Correo automático al cliente (EmailJS): completar con tus 3 datos */
+  emailjs: { publicKey:"guKBF_QTTJ24ukETt", serviceId:"service_h3zds2b", templateId:"template_0r2bkha" },
   planes: [
     {id:"base", nombre:"Base", sub:"Cumplimiento al día", precios:{T1:3,T2:6,T3:10,T4:18},
      incluye:["Contabilidad completa y registros tributarios","Tesorería: conciliación bancaria y control de pagos","Declaración mensual F29","Proyección de renta y PPM (2 veces al año)","Asesoría tributaria por WhatsApp y correo"]},
@@ -569,7 +584,7 @@ function buildDoc(cl, meta){
   }
   $("#doc").innerHTML = `
   <div class="cover">
-    <div class="logocard"><img src="${LOGO}" alt="Confín Consultora Limitada"></div>
+    <div class="coverlogo"><img src="${LOGO}" alt="Confín Consultora Limitada" width="182" height="110"></div>
     <h2>Propuesta de servicios contables, tributarios y financieros</h2>
     <div class="for">
       <div>Propuesta preparada para:<b>${esc(cl.emp)}</b>Attn: ${esc((cl.nom+" "+cl.ape).toUpperCase())}${cl.rut?`<br>RUT ${esc(cl.rut)}`:""}</div>
@@ -630,7 +645,7 @@ function buildDoc(cl, meta){
   const respuesta = [
     `Hola ${cl.nom}`, ``,
     `Te enviamos la cotización del *Plan ${plan.nombre}* para *${cl.emp}* que solicitaste — válida por ${CONFIG.validezDias} días.`, ``,
-    link?`Descarga el PDF aquí:\n${link}`:null, link?``:null,
+    link?`Descarga el PDF aquí:\n${link}&dl=1`:null, link?``:null,
     `Si tienes alguna duda, responde este mensaje y te ayudamos.`, ``,
     `*Equipo Confín Consultora Limitada*`, `Tu horizonte es nuestro trabajo`
   ].filter(x=>x!==null).join("\n");
@@ -661,7 +676,7 @@ function emailHTML(cl, q){
   <p style="font-size:13px;font-weight:700;color:${P};margin:18px 0 6px">Tu plan incluye</p><ul style="font-size:13px;color:#48464D;padding-left:18px;margin:0">${q.plan.hereda?`<li style="margin:0 0 4px"><b>${q.plan.hereda}</b></li>`:""}${inc}</ul>
   <table style="width:100%;border-collapse:collapse;margin-top:18px">${rows}</table>
   <p style="font-size:12px;color:${G};margin:14px 0 0">Valores en UF, exentos de IVA, facturados en pesos al valor UF del día de emisión. <b>Valor referencial:</b> el precio final se confirma tras un diagnóstico de tu empresa y puede variar.</p>
-  ${q.link?`<p style="margin:18px 0 0"><a href="${q.link}" style="display:inline-block;background:${P};color:#fff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:8px;font-size:14px">Ver y descargar propuesta</a></p>`:""}
+  ${q.link?`<p style="margin:18px 0 0"><a href="${q.link}&dl=1" style="display:inline-block;background:${P};color:#fff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:8px;font-size:14px">Ver y descargar propuesta</a></p>`:""}
   <p style="background:#FBEAF7;border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;margin:16px 0">Propuesta válida hasta el <span style="color:${M}">${fDate(q.val)}</span>.</p>
   <p style="font-size:14px;margin:0 0 16px">Si tienes dudas, responde este correo o escríbenos por WhatsApp al +56 9 3468 7740.</p>
   <div style="border-left:3px solid ${P};padding-left:12px;font-size:13px;color:#48464D"><b style="color:#252525">Equipo Confín Consultora Limitada</b><br>🧭 Tu horizonte es nuestro trabajo 🚀</div>
@@ -678,6 +693,20 @@ function internoHTML(cl, q){
   ${q.link?`<p style="margin:16px 0 0"><a href="${q.link}" style="color:${P};font-size:13px;font-weight:700">Ver la propuesta enviada</a></p>`:""}
   </div>`;
 }
+const EJ = CONFIG.emailjs, ejListo = () => CONFIG.web && EJ.publicKey && EJ.serviceId && EJ.templateId;
+if(ejListo()){
+  const sc=document.createElement("script");
+  sc.src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js";
+  sc.onload=()=>{ try{ emailjs.init({publicKey:EJ.publicKey}); }catch(_){} };
+  document.head.appendChild(sc);
+}
+function correoCliente(cl, q){
+  if(!ejListo() || !window.emailjs) return Promise.reject("no-ej");
+  return emailjs.send(EJ.serviceId, EJ.templateId, {
+    to_email: cl.mail, to_name: `${cl.nom} ${cl.ape}`, empresa: cl.emp, cotizacion: q.num,
+    plan: q.plan.nombre, propuesta_html: emailHTML(cl, q)
+  });
+}
 function sendAviso(cl, q, cel){
   const box=$("#sendst");
   box.className="sendst"; box.textContent="Enviando tu solicitud…"; $("#sendBtn").disabled=true;
@@ -689,12 +718,12 @@ function sendAviso(cl, q, cel){
       "Cotización":q.num, "Nombre":`${cl.nom} ${cl.ape}`, "Empresa":cl.emp+(cl.rut?` (RUT ${cl.rut})`:""),
       "Celular":"+56 "+cel, "Correo":cl.mail, "Plan":q.plan.nombre, "Valor":q.valorTxt, "Válida hasta":fDate(q.val),
       "Perfil":q.pf.join(" | "), "Mensaje":cl.msg||"—",
-      "Ver propuesta":q.link, "Enviar al cliente por WhatsApp":waCliente,
-      email: cl.mail, _replyto: cl.mail,
-      _autoresponse: q.respuesta.replace(/\*/g,"")
+      "Ver propuesta":q.link, "Descargar PDF (para adjuntar)":q.link+"&dl=1",
+      "Enviar al cliente por WhatsApp":waCliente, _replyto: cl.mail
     })
   }).then(r=>{ if(!r.ok) throw 0;
-      box.className="sendst ok"; box.textContent=`Listo: te enviamos la propuesta a tu correo (${cl.mail}); revisa también tu carpeta de spam. Te contactaremos por WhatsApp al +56 ${cel}. También puedes descargarla aquí mismo.`; })
+      box.className="sendst ok"; box.textContent=`Listo: recibimos tu solicitud. Te enviaremos la propuesta a tu WhatsApp (+56 ${cel}). Mientras tanto, puedes descargarla aquí mismo.`;
+      return correoCliente(cl, q).then(()=>{ box.textContent=`Listo: te enviamos la propuesta a tu correo (${cl.mail}) — revisa también spam. Te contactaremos por WhatsApp al +56 ${cel}. También puedes descargarla aquí mismo.`; }, ()=>{}); })
     .catch(()=>{ box.className="sendst bad"; box.textContent="No pudimos enviar tu solicitud en este momento. Descarga tu propuesta aquí mismo y escríbenos al WhatsApp +56 9 3468 7740."; })
     .finally(()=>{ $("#sendBtn").disabled=false; });
 }
@@ -723,7 +752,28 @@ function sendMake(cl, q){
 }
 
 function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>el.hidden=true,2200); }
-if(CONFIG.web){ const b=$("#pdf"); b.hidden=false; b.onclick=()=>window.print(); }
+if(CONFIG.web){
+  const b=$("#pdf"); b.hidden=false;
+  const sc=document.createElement("script");
+  sc.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+  document.head.appendChild(sc);
+  b.onclick=()=>descargarPDF();
+}
+function descargarPDF(){
+  const num = ($("#doc .qn b")||{}).textContent || "propuesta";
+  if(!window.html2pdf){ window.print(); return; }
+  const b=$("#pdf"), t=b.textContent; b.textContent="Generando PDF…"; b.disabled=true;
+  document.documentElement.classList.add("pdfmode");
+  const imgs=[...$("#doc").querySelectorAll("img")];
+  Promise.all(imgs.map(i=>i.decode?i.decode().catch(()=>{}):null)).then(()=>
+  html2pdf().set({
+    margin:[8,8,10,8], filename:`Cotizacion_Confin_${num}.pdf`,
+    image:{type:"jpeg",quality:0.95}, html2canvas:{scale:2,useCORS:true,backgroundColor:"#ffffff"},
+    jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}, pagebreak:{mode:["css","avoid-all"]}
+  }).from($("#doc")).save()).catch(()=>window.print()).finally(()=>{
+    document.documentElement.classList.remove("pdfmode"); b.textContent=t; b.disabled=false;
+  });
+}
 
 (async()=>{
   try{
@@ -735,7 +785,16 @@ if(CONFIG.web){ const b=$("#pdf"); b.hidden=false; b.onclick=()=>window.print();
 })();
 
 render();
-if(SHARED && SHARED.c){ ov.hidden=false; document.body.style.overflow="hidden"; buildDoc({...SHARED.c, cel:"", mail:"", msg:""}, SHARED); }
+if(SHARED && SHARED.c){
+  document.documentElement.classList.add("shared");
+  ov.hidden=false; buildDoc({...SHARED.c, cel:"", mail:"", msg:""}, SHARED);
+  $("#edit").textContent="Hacer mi propia cotización";
+  $("#edit").onclick=()=>{ location.href=location.pathname; };
+  $("#pdf").textContent="Descargar PDF";
+  if(new URLSearchParams(location.search).get("dl")==="1"){
+    const go=()=> window.html2pdf ? descargarPDF() : setTimeout(go,300); setTimeout(go,600);
+  }
+}
 </script>
 
 </body>
