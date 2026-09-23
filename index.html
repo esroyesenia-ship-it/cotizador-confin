@@ -689,10 +689,12 @@ function sendAviso(cl, q, cel){
       "Cotización":q.num, "Nombre":`${cl.nom} ${cl.ape}`, "Empresa":cl.emp+(cl.rut?` (RUT ${cl.rut})`:""),
       "Celular":"+56 "+cel, "Correo":cl.mail, "Plan":q.plan.nombre, "Valor":q.valorTxt, "Válida hasta":fDate(q.val),
       "Perfil":q.pf.join(" | "), "Mensaje":cl.msg||"—",
-      "Ver propuesta":q.link, "Enviar al cliente por WhatsApp":waCliente
+      "Ver propuesta":q.link, "Enviar al cliente por WhatsApp":waCliente,
+      email: cl.mail, _replyto: cl.mail,
+      _autoresponse: q.respuesta.replace(/\*/g,"")
     })
   }).then(r=>{ if(!r.ok) throw 0;
-      box.className="sendst ok"; box.textContent=`Listo: recibimos tu solicitud. Te enviaremos la propuesta a tu WhatsApp (+56 ${cel}) y a tu correo a la brevedad. Mientras tanto, puedes descargarla aquí mismo.`; })
+      box.className="sendst ok"; box.textContent=`Listo: te enviamos la propuesta a tu correo (${cl.mail}); revisa también tu carpeta de spam. Te contactaremos por WhatsApp al +56 ${cel}. También puedes descargarla aquí mismo.`; })
     .catch(()=>{ box.className="sendst bad"; box.textContent="No pudimos enviar tu solicitud en este momento. Descarga tu propuesta aquí mismo y escríbenos al WhatsApp +56 9 3468 7740."; })
     .finally(()=>{ $("#sendBtn").disabled=false; });
 }
