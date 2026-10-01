@@ -700,18 +700,24 @@ if(ejListo()){
   sc.onload=()=>{ try{ emailjs.init({publicKey:EJ.publicKey}); }catch(_){} };
   document.head.appendChild(sc);
 }
+function esperarEmailJS(ms){
+  return new Promise((ok,no)=>{ const t0=Date.now(); (function chk(){
+    if(window.emailjs && window.emailjs.send) return ok();
+    if(Date.now()-t0>ms) return no("emailjs-no-cargo"); setTimeout(chk,250); })(); });
+}
 function correoCliente(cl, q){
-  if(!ejListo() || !window.emailjs) return Promise.reject("no-ej");
-  return emailjs.send(EJ.serviceId, EJ.templateId, {
-    to_email: cl.mail, to_name: `${cl.nom} ${cl.ape}`, empresa: cl.emp, cotizacion: q.num,
-    plan: q.plan.nombre, propuesta_html: emailHTML(cl, q)
-  });
+  if(!ejListo()) return Promise.reject("emailjs-sin-config");
+  return esperarEmailJS(8000).then(()=>{ try{ emailjs.init({publicKey:EJ.publicKey}); }catch(_){}
+    return emailjs.send(EJ.serviceId, EJ.templateId, {
+      to_email: cl.mail, to_name: `${cl.nom} ${cl.ape}`, empresa: cl.emp, cotizacion: q.num,
+      plan: q.plan.nombre, propuesta_html: emailHTML(cl, q)
+    }, {publicKey:EJ.publicKey}); });
 }
 function sendAviso(cl, q, cel){
   const box=$("#sendst");
   box.className="sendst"; box.textContent="Enviando tu solicitud…"; $("#sendBtn").disabled=true;
   const waCliente = `https://wa.me/56${cel}?text=${encodeURIComponent(q.respuesta)}`;
-  fetch(`https://formsubmit.co/ajax/${CONFIG.avisoCorreo}`,{
+  const aviso = fetch(`https://formsubmit.co/ajax/${CONFIG.avisoCorreo}`,{
     method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"},
     body: JSON.stringify({
       _subject:`Nueva cotización N° ${q.num} – ${cl.emp}`, _template:"table", _captcha:"false",
@@ -721,11 +727,19 @@ function sendAviso(cl, q, cel){
       "Ver propuesta":q.link, "Descargar PDF (para adjuntar)":q.link+"&dl=1",
       "Enviar al cliente por WhatsApp":waCliente, _replyto: cl.mail
     })
-  }).then(r=>{ if(!r.ok) throw 0;
-      box.className="sendst ok"; box.textContent=`Listo: recibimos tu solicitud. Te enviaremos la propuesta a tu WhatsApp (+56 ${cel}). Mientras tanto, puedes descargarla aquí mismo.`;
-      return correoCliente(cl, q).then(()=>{ box.textContent=`Listo: te enviamos la propuesta a tu correo (${cl.mail}) — revisa también spam. Te contactaremos por WhatsApp al +56 ${cel}. También puedes descargarla aquí mismo.`; }, ()=>{}); })
-    .catch(()=>{ box.className="sendst bad"; box.textContent="No pudimos enviar tu solicitud en este momento. Descarga tu propuesta aquí mismo y escríbenos al WhatsApp +56 9 8463 0104."; })
-    .finally(()=>{ $("#sendBtn").disabled=false; });
+  }).then(r=>r.json().catch(()=>({})).then(j=>{ if(!r.ok || j.success==="false" || j.success===false) throw ("formsubmit: "+(j.message||r.status)); }));
+  const correo = correoCliente(cl, q);
+  Promise.allSettled([aviso, correo]).then(([a, c])=>{
+    if(a.status==="rejected") console.error("Aviso FormSubmit falló:", a.reason);
+    if(c.status==="rejected") console.error("Correo EmailJS falló:", c.reason);
+    if(c.status==="fulfilled"){
+      box.className="sendst ok"; box.textContent=`Listo: te enviamos la propuesta a tu correo (${cl.mail}) — revisa también spam. Te contactaremos por WhatsApp al +56 ${cel}. También puedes descargarla aquí mismo.`;
+    } else if(a.status==="fulfilled"){
+      box.className="sendst ok"; box.textContent=`Listo: recibimos tu solicitud. Te enviaremos la propuesta a tu WhatsApp (+56 ${cel}) y a tu correo. Mientras tanto, puedes descargarla aquí mismo.`;
+    } else {
+      box.className="sendst bad"; box.textContent="No pudimos enviar tu solicitud en este momento. Descarga tu propuesta aquí mismo y escríbenos al WhatsApp +56 9 8463 0104.";
+    }
+  }).finally(()=>{ $("#sendBtn").disabled=false; });
 }
 function sendMake(cl, q){
   const box=$("#sendst"), cel=cl.cel.replace(/^56/,"");
