@@ -316,7 +316,7 @@ footer b{color:var(--petroleo)}
   <div class="note"><b>Valor referencial.</b> El precio final se confirma después de un diagnóstico de tu empresa (volumen real, estado de la contabilidad y necesidades específicas), por lo que puede variar.</div>
   <p class="fine" id="ufNote"></p>
 
-  <footer><b>Confín Consultora Limitada</b> · Contabilidad, tributaria, remuneraciones y finanzas para pymes · WhatsApp +56 9 3468 7740</footer>
+  <footer><b>Confín Consultora Limitada</b> · Contabilidad, tributaria, remuneraciones y finanzas para pymes · WhatsApp +56 9 8463 0104</footer>
 </div>
 
 <div class="mbar">
@@ -360,7 +360,7 @@ footer b{color:var(--petroleo)}
 <script>
 /* ======================= CONFIGURACIÓN (editar aquí) ======================= */
 const CONFIG = {
-  whatsapp: "56934687740",
+  whatsapp: "56984630104",
   validezDias: 10,
   uf: 40991.75, ufFecha: "22-09-2026",   // respaldo si no se puede leer la UF del día
   web: true,                             // true en la versión para la página web
@@ -624,7 +624,7 @@ function buildDoc(cl, meta){
       <li>Una contabilidad atrasada se regulariza con un valor aparte, que se informa en el diagnóstico.</li>
     </ul>
     <div class="valid">Esta propuesta es válida hasta el <b>${fDate(val)}</b>.</div>
-    <div class="sign"><b>Equipo Confín Consultora Limitada</b>🧭 Tu horizonte es nuestro trabajo 🚀 · WhatsApp +56 9 3468 7740</div>
+    <div class="sign"><b>Equipo Confín Consultora Limitada</b>🧭 Tu horizonte es nuestro trabajo 🚀 · WhatsApp +56 9 8463 0104</div>
   </section>`;
 
   const mesUF = v===null?null:(st.pay==="cuotas"?cuota(v):v);
@@ -678,7 +678,7 @@ function emailHTML(cl, q){
   <p style="font-size:12px;color:${G};margin:14px 0 0">Valores en UF, exentos de IVA, facturados en pesos al valor UF del día de emisión. <b>Valor referencial:</b> el precio final se confirma tras un diagnóstico de tu empresa y puede variar.</p>
   ${q.link?`<p style="margin:18px 0 0"><a href="${q.link}&dl=1" style="display:inline-block;background:${P};color:#fff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:8px;font-size:14px">Ver y descargar propuesta</a></p>`:""}
   <p style="background:#FBEAF7;border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;margin:16px 0">Propuesta válida hasta el <span style="color:${M}">${fDate(q.val)}</span>.</p>
-  <p style="font-size:14px;margin:0 0 16px">Si tienes dudas, responde este correo o escríbenos por WhatsApp al +56 9 3468 7740.</p>
+  <p style="font-size:14px;margin:0 0 16px">Si tienes dudas, responde este correo o escríbenos por WhatsApp al +56 9 8463 0104.</p>
   <div style="border-left:3px solid ${P};padding-left:12px;font-size:13px;color:#48464D"><b style="color:#252525">Equipo Confín Consultora Limitada</b><br>🧭 Tu horizonte es nuestro trabajo 🚀</div>
   </div></div>`;
 }
@@ -724,7 +724,7 @@ function sendAviso(cl, q, cel){
   }).then(r=>{ if(!r.ok) throw 0;
       box.className="sendst ok"; box.textContent=`Listo: recibimos tu solicitud. Te enviaremos la propuesta a tu WhatsApp (+56 ${cel}). Mientras tanto, puedes descargarla aquí mismo.`;
       return correoCliente(cl, q).then(()=>{ box.textContent=`Listo: te enviamos la propuesta a tu correo (${cl.mail}) — revisa también spam. Te contactaremos por WhatsApp al +56 ${cel}. También puedes descargarla aquí mismo.`; }, ()=>{}); })
-    .catch(()=>{ box.className="sendst bad"; box.textContent="No pudimos enviar tu solicitud en este momento. Descarga tu propuesta aquí mismo y escríbenos al WhatsApp +56 9 3468 7740."; })
+    .catch(()=>{ box.className="sendst bad"; box.textContent="No pudimos enviar tu solicitud en este momento. Descarga tu propuesta aquí mismo y escríbenos al WhatsApp +56 9 8463 0104."; })
     .finally(()=>{ $("#sendBtn").disabled=false; });
 }
 function sendMake(cl, q){
@@ -743,7 +743,7 @@ function sendMake(cl, q){
     email_html:emailHTML(cl,q), interno_html:internoHTML(cl,q)
   });
   const ok=()=>{ box.className="sendst ok"; box.textContent=`Listo: te enviamos la propuesta a tu WhatsApp (+56 ${cel}) y a tu correo (${cl.mail}). Si no ves el correo, revisa tu carpeta de spam.`; };
-  const bad=()=>{ box.className="sendst bad"; box.textContent=`No pudimos enviar la propuesta en este momento. Puedes descargarla aquí mismo o escribirnos al WhatsApp +56 9 3468 7740.`; };
+  const bad=()=>{ box.className="sendst bad"; box.textContent=`No pudimos enviar la propuesta en este momento. Puedes descargarla aquí mismo o escribirnos al WhatsApp +56 9 8463 0104.`; };
   $("#sendBtn").disabled=true;
   fetch(CONFIG.webhook,{method:"POST",body:data})
     .then(r=>r.ok?ok():bad())
