@@ -371,7 +371,7 @@ const CONFIG = {
   /* Mientras Make no esté conectado: te llega un aviso por correo con cada cotización (FormSubmit) */
   avisoCorreo: "confin.consultora.ltda@gmail.com",
   /* Correo automático al cliente (EmailJS): completar con tus 3 datos */
-  emailjs: { publicKey:"guKBF_QTTJ24ukETt", serviceId:"service_h3zds2b", templateId:"template_0r2bkha" },
+  emailjs: { publicKey:"guKBF_QTTJ24ukETt", serviceId:"service_h3zds2b", templateId:"template_0r2bkha", templateAviso:"template_2hbfsa9" },
   planes: [
     {id:"base", nombre:"Base", sub:"Cumplimiento al día", precios:{T1:3,T2:6,T3:10,T4:18},
      incluye:["Contabilidad completa y registros tributarios","Conciliación bancaria","Declaración mensual F29","Asesoría por WhatsApp y correo (según plan y servicios contratados)"]},
@@ -670,7 +670,7 @@ function emailHTML(cl, q){
   else rows=`<tr><td ${td}>Plan ${q.plan.nombre} · ${esc(q.plan.sub)}</td><td ${tdr}>${ufFmt(q.v)} UF</td></tr><tr><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P}">Total mensual</td><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P};text-align:right">desde ${ufFmt(q.v)} UF</td></tr><tr><td ${td}>Renta anual (${q.n} mensualidades, ${CONFIG.rentaMes})</td><td ${tdr}>${ufFmt(q.v*q.n)} UF</td></tr>`;
   const inc = q.plan.incluye.map(i=>`<li style="margin:0 0 4px">${esc(i)}</li>`).join("");
   return `<div style="font-family:Arial,Helvetica,sans-serif;color:#252525;max-width:640px;margin:0 auto">
-  <div style="background:${P};color:#fff;padding:20px 24px;border-radius:12px 12px 0 0">${CONFIG.web?`<div style="background:#fff;border-radius:8px;padding:6px 10px;display:inline-block"><img src="${location.origin}/logo.jpg" alt="Confín Consultora Limitada" height="48" style="display:block;height:48px"></div>`:`<div style="font-size:22px;font-weight:800">Confín Consultora Limitada</div>`}<div style="margin-top:10px;font-size:13px">Cotización N° <b>${q.num}</b></div></div>
+  <div style="background:${P};color:#fff;padding:20px 24px;border-radius:12px 12px 0 0">${CONFIG.web?`<div style="background:#fff;border-radius:8px;padding:6px 10px;display:inline-block"><img src="https://raw.githubusercontent.com/esroyesenia-ship-it/cotizador-confin/main/logo.jpg" alt="Confín Consultora Limitada" height="48" style="display:block;height:48px"></div>`:`<div style="font-size:22px;font-weight:800">Confín Consultora Limitada</div>`}<div style="margin-top:10px;font-size:13px">Cotización N° <b>${q.num}</b></div></div>
   <div style="border:1px solid #E4E2E8;border-top:0;padding:24px;border-radius:0 0 12px 12px">
   <p style="font-size:16px;margin:0 0 12px">Estimado/a <b>${esc((cl.nom+" "+cl.ape).toUpperCase())}</b>,</p>
   <p style="font-size:14px;margin:0 0 12px">Te enviamos la propuesta para <b>${esc(cl.emp)}</b> con el plan <b>${q.plan.nombre}</b>.</p>
@@ -685,14 +685,23 @@ function emailHTML(cl, q){
   </div></div>`;
 }
 function internoHTML(cl, q){
-  const P="#00616F";
-  const row=(k,v)=>`<tr><td style="padding:6px 0;color:#737273;font-size:13px;width:120px">${k}</td><td style="padding:6px 0;font-size:14px;font-weight:600">${v}</td></tr>`;
+  const P="#00616F", M="#CF00A5";
+  const cel=String(cl.cel).replace(/\D/g,"").replace(/^56/,"");
+  const wa=`https://wa.me/56${cel}?text=${encodeURIComponent(q.respuesta)}`;
+  const mail=`mailto:${cl.mail}?subject=${encodeURIComponent("Tu propuesta Confín N° "+q.num)}`;
+  const btn=(h,t,c)=>`<a href="${h}" style="display:inline-block;background:${c};color:#fff;text-decoration:none;font-weight:700;padding:10px 16px;border-radius:8px;font-size:14px;margin:0 8px 8px 0">${t}</a>`;
+  const row=(k,v)=>`<tr><td style="padding:6px 12px 6px 0;color:#737273;font-size:13px;white-space:nowrap">${k}</td><td style="padding:6px 0;font-size:15px;font-weight:700">${v}</td></tr>`;
   return `<div style="font-family:Arial,Helvetica,sans-serif;color:#252525;max-width:600px">
-  <p style="font-size:18px;font-weight:800;color:${P};margin:0 0 4px">Nueva cotización N° ${q.num}</p>
-  <p style="font-size:13px;color:#737273;margin:0 0 16px">Plan ${q.plan.nombre} · ${esc(q.valorTxt)} · ya se le envió por WhatsApp y correo</p>
-  <table style="border-collapse:collapse">${row("Nombre",esc(cl.nom+" "+cl.ape))}${row("Empresa",esc(cl.emp)+(cl.rut?" · "+esc(cl.rut):""))}${row("Celular","+56 "+esc(cl.cel))}${row("Correo",esc(cl.mail))}${row("Mensaje",esc(cl.msg||"—"))}</table>
-  <p style="font-size:13px;font-weight:700;color:${P};margin:16px 0 6px">Perfil</p><ul style="font-size:13px;padding-left:18px;margin:0">${q.pf.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-  ${q.link?`<p style="margin:16px 0 0"><a href="${q.link}" style="color:${P};font-size:13px;font-weight:700">Ver la propuesta enviada</a></p>`:""}
+  <p style="font-size:20px;font-weight:800;color:${P};margin:0 0 4px">Nueva cotización N° ${q.num}</p>
+  <p style="font-size:13px;color:#737273;margin:0 0 14px">Plan ${q.plan.nombre} · ${esc(q.valorTxt)} · válida hasta ${fDate(q.val)}</p>
+  <div style="border:2px solid ${P};border-radius:10px;padding:14px 16px;margin:0 0 16px">
+  <p style="font-size:13px;font-weight:800;color:${M};margin:0 0 6px;text-transform:uppercase;letter-spacing:.5px">Datos de contacto</p>
+  <table style="border-collapse:collapse">${row("Nombre",esc(cl.nom+" "+cl.ape))}${row("Empresa",esc(cl.emp)+(cl.rut?" · RUT "+esc(cl.rut):""))}${row("Celular",`<a href="tel:+56${cel}" style="color:#252525">+56 ${cel.replace(/^(\d)(\d{4})(\d{4})$/,"$1 $2 $3")}</a>`)}${row("Correo",`<a href="mailto:${esc(cl.mail)}" style="color:#252525">${esc(cl.mail)}</a>`)}${row("Mensaje",esc(cl.msg||"—"))}</table>
+  <p style="margin:12px 0 0">${btn(wa,"Escribirle por WhatsApp","#25D366")}${btn(mail,"Responderle por correo",P)}</p>
+  </div>
+  <p style="font-size:13px;font-weight:700;color:${P};margin:0 0 6px">Perfil de la empresa</p><ul style="font-size:13px;padding-left:18px;margin:0">${q.pf.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  ${q.link?`<p style="margin:16px 0 0;font-size:13px"><a href="${q.link}" style="color:${P};font-weight:700">Ver la propuesta</a> · <a href="${q.link}&dl=1" style="color:${P};font-weight:700">Descargar PDF</a></p>`:""}
+  <p style="font-size:12px;color:#737273;margin:16px 0 0">El cliente ya recibió la propuesta en su correo. Si respondes este aviso, la respuesta le llega directo al cliente.</p>
   </div>`;
 }
 const EJ = CONFIG.emailjs, ejListo = () => CONFIG.web && EJ.publicKey && EJ.serviceId && EJ.templateId;
@@ -719,7 +728,12 @@ function sendAviso(cl, q, cel){
   const box=$("#sendst");
   box.className="sendst"; box.textContent="Enviando tu solicitud…"; $("#sendBtn").disabled=true;
   const waCliente = `https://wa.me/56${cel}?text=${encodeURIComponent(q.respuesta)}`;
-  const aviso = fetch(`https://formsubmit.co/ajax/${CONFIG.avisoCorreo}`,{
+  const avisoEJ = () => esperarEmailJS(8000).then(()=>emailjs.send(EJ.serviceId, EJ.templateAviso, {
+      asunto:`Nueva cotización N° ${q.num} – ${cl.emp} – ${cl.nom} ${cl.ape}`, reply_to: cl.mail,
+      cliente:`${cl.nom} ${cl.ape}`, celular:"+56 "+cel, correo:cl.mail, cotizacion:q.num,
+      aviso_html: internoHTML(cl, q)
+    }, {publicKey:EJ.publicKey}));
+  const formSubmit = () => fetch(`https://formsubmit.co/ajax/${CONFIG.avisoCorreo}`,{
     method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"},
     body: JSON.stringify({
       _subject:`Nueva cotización N° ${q.num} – ${cl.emp}`, _template:"table", _captcha:"false",
@@ -730,9 +744,11 @@ function sendAviso(cl, q, cel){
       "Enviar al cliente por WhatsApp":waCliente, _replyto: cl.mail
     })
   }).then(r=>r.json().catch(()=>({})).then(j=>{ if(!r.ok || j.success==="false" || j.success===false) throw ("formsubmit: "+(j.message||r.status)); }));
+  /* Aviso a Confín: EmailJS (plantilla "Aviso Confín"); si falla, respaldo por FormSubmit */
+  const aviso = (EJ.templateAviso && ejListo()) ? avisoEJ().catch(e=>{ console.error("Aviso EmailJS falló, uso respaldo:", e); return formSubmit(); }) : formSubmit();
   const correo = correoCliente(cl, q);
   Promise.allSettled([aviso, correo]).then(([a, c])=>{
-    if(a.status==="rejected") console.error("Aviso FormSubmit falló:", a.reason);
+    if(a.status==="rejected") console.error("Aviso interno falló:", a.reason);
     if(c.status==="rejected") console.error("Correo EmailJS falló:", c.reason);
     if(c.status==="fulfilled"){
       box.className="sendst ok"; box.textContent=`Listo: te enviamos la propuesta a tu correo (${cl.mail}) — revisa también spam. Te contactaremos por WhatsApp al +56 ${cel}. También puedes descargarla aquí mismo.`;
