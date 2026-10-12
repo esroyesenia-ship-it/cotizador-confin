@@ -374,13 +374,13 @@ const CONFIG = {
   emailjs: { publicKey:"guKBF_QTTJ24ukETt", serviceId:"service_h3zds2b", templateId:"template_0r2bkha" },
   planes: [
     {id:"base", nombre:"Base", sub:"Cumplimiento al día", precios:{T1:3,T2:6,T3:10,T4:18},
-     incluye:["Contabilidad completa y registros tributarios","Tesorería: conciliación bancaria y control de pagos","Declaración mensual F29","Proyección de renta y PPM (2 veces al año)","Asesoría tributaria por WhatsApp y correo"]},
+     incluye:["Contabilidad completa y registros tributarios","Conciliación bancaria","Declaración mensual F29","Asesoría por WhatsApp y correo (según plan y servicios contratados)"]},
     {id:"horizonte", nombre:"Horizonte", sub:"Información para crecer", tag:"Más elegido", precios:{T1:7,T2:11,T3:18,T4:30},
      hereda:"Todo lo del plan Base, más:",
-     incluye:["Tablero Power BI con tus resultados","Reunión mensual de resultados","Flujo de caja proyectado mensual en CRM Confín"]},
+     incluye:["Reunión trimestral de resultados","Estados financieros trimestrales en Power BI","Proyección de renta y PPM, 1 vez al año"]},
     {id:"confin", nombre:"Confín", sub:"Tu socio financiero", precios:{T1:10,T2:15,T3:24,T4:38},
      hereda:"Todo lo del plan Horizonte, más:",
-     incluye:["Planificación tributaria anual","Asesoría financiera: créditos, inversión y financiamiento","Acompañamiento en decisiones estratégicas"]}
+     incluye:["Reunión mensual de resultados","Asesoría financiera: créditos, inversión y financiamiento","Acompañamiento en decisiones estratégicas","Flujo de caja proyectado mensual","Proyección de renta y PPM, 3 veces al año","Análisis de industria"]}
   ],
   /* Variables del perfil: cada opción suma UF al valor del plan (null = propuesta a medida) */
   preguntas: {
@@ -413,16 +413,17 @@ const CONFIG = {
   },
   comparativa: [
     ["Contabilidad completa y registros tributarios",[1,1,1]],
-    ["Tesorería: conciliación bancaria y control de pagos",[1,1,1]],
+    ["Conciliación bancaria",[1,1,1]],
     ["Declaración mensual F29",[1,1,1]],
     ["Remuneraciones (según N° de trabajadores)",[1,1,1]],
-    ["Proyección de renta y PPM",["2 al año","Mensual","Mensual"]],
-    ["Asesoría tributaria por WhatsApp y correo",[1,1,1]],
-    ["Tablero Power BI",[0,1,1]],
-    ["Reunión mensual de resultados",[0,1,1]],
-    ["Flujo de caja proyectado (CRM Confín)",[0,1,1]],
-    ["Planificación tributaria anual",[0,0,1]],
-    ["Asesoría financiera",[0,0,1]]
+    ["Asesoría por WhatsApp y correo",[1,1,1]],
+    ["Reunión de resultados",[0,"Trimestral","Mensual"]],
+    ["Estados financieros en Power BI",[0,"Trimestral","Trimestral"]],
+    ["Proyección de renta y PPM",[0,"1 vez al año","3 veces al año"]],
+    ["Flujo de caja proyectado mensual",[0,0,1]],
+    ["Asesoría financiera: créditos, inversión y financiamiento",[0,0,1]],
+    ["Acompañamiento en decisiones estratégicas",[0,0,1]],
+    ["Análisis de industria",[0,0,1]]
   ]
 };
 /* ========================================================================== */
@@ -595,11 +596,12 @@ function buildDoc(cl, meta){
     <h4>Resumen ejecutivo</h4>
     <p>Estimado/a <b>${esc(cl.nom)}</b>, esta propuesta presenta cómo Confín Consultora Limitada se hará cargo de la gestión contable, tributaria y financiera de ${esc(cl.emp)}, con el plan <b>${plan.nombre}</b>.</p>
     <ul class="pts">
-      <li><b>Cumplimiento al día:</b> contabilidad, F29 y Renta anual sin atrasos ni multas.</li>
-      <li><b>Sin sorpresas en abril:</b> proyectamos tu impuesto y ajustamos tus PPM durante el año.</li>
+      <li><b>Cumplimiento al día:</b> contabilidad, conciliación bancaria, F29 y Renta anual sin atrasos ni multas.</li>
+      <li><b>Siempre acompañado:</b> asesoría por WhatsApp y correo según tu plan.</li>
+      ${idx>=1?`<li><b>Sin sorpresas en abril:</b> proyectamos tu impuesto y ajustamos tus PPM ${idx>=2?"3 veces al año":"una vez al año"}.</li>`:""}
       ${st.trab!=="0"?`<li><b>Tu equipo al día:</b> liquidaciones, Previred y Libro de Remuneraciones Electrónico.</li>`:""}
-      ${idx>=1?`<li><b>Información para decidir:</b> tablero Power BI y reunión mensual para revisar tus resultados.</li>`:""}
-      ${idx>=2?`<li><b>Un socio financiero:</b> planificación tributaria y asesoría para crecer con respaldo.</li>`:""}
+      ${idx>=1?`<li><b>Información para decidir:</b> estados financieros trimestrales en Power BI y reunión ${idx>=2?"mensual":"trimestral"} de resultados.</li>`:""}
+      ${idx>=2?`<li><b>Un socio financiero:</b> flujo de caja proyectado, análisis de industria y asesoría en créditos, inversión y decisiones estratégicas.</li>`:""}
     </ul>
   </section>
   <section>
