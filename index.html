@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Cotizador Confín</title>
 <!-- ===== Medición (Ninja Ads): Google Analytics, misma propiedad del sitio ===== -->
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -18,6 +17,7 @@
   gtag('config', 'G-C5MN2E9FES');
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5MN2E9FES"></script>
+<title>Cotizador Confín</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
@@ -176,10 +176,6 @@ footer b{color:var(--petroleo)}
 .phone input{border:0!important;border-radius:0}
 .phone:focus-within{border-color:var(--petroleo)}
 .phone.err{border-color:var(--magenta)}
-.consent{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--ink-2);margin-top:16px;line-height:1.45}
-.consent input{margin-top:3px;width:18px;height:18px;flex:none;accent-color:var(--petroleo)}
-.consent a{color:var(--petroleo);font-weight:600}
-.consent.err{color:var(--magenta)}
 .errmsg{color:var(--magenta);font-size:13px;font-weight:600;margin-top:12px}
 .recap{background:var(--tint-p);border-radius:12px;padding:12px 14px;font-size:13px;margin-bottom:18px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .recap b{color:var(--petroleo)}
@@ -392,16 +388,16 @@ const CONFIG = {
   /* Registro de solicitudes en planilla de Google (Apps Script). Dejar "" para desactivar */
   planilla: "",
   /* Correo automático al cliente (EmailJS): completar con tus 3 datos */
-  emailjs: { publicKey:"guKBF_QTTJ24ukETt", serviceId:"service_h3zds2b", templateId:"template_0r2bkha" },
+  emailjs: { publicKey:"guKBF_QTTJ24ukETt", serviceId:"service_h3zds2b", templateId:"template_0r2bkha", templateAviso:"template_2hbfsa9" },
   planes: [
     {id:"base", nombre:"Base", sub:"Cumplimiento al día", precios:{T1:3,T2:6,T3:10,T4:18},
-     incluye:["Contabilidad completa y registros tributarios","Tesorería: conciliación bancaria y control de pagos","Declaración mensual F29","Proyección de renta y PPM (2 veces al año)","Asesoría tributaria por WhatsApp y correo"]},
+     incluye:["Contabilidad completa y registros tributarios","Conciliación bancaria","Declaración mensual F29","Asesoría por WhatsApp y correo (según plan y servicios contratados)"]},
     {id:"horizonte", nombre:"Horizonte", sub:"Información para crecer", tag:"Más elegido", precios:{T1:7,T2:11,T3:18,T4:30},
      hereda:"Todo lo del plan Base, más:",
-     incluye:["Tablero Power BI con tus resultados","Reunión mensual de resultados","Flujo de caja proyectado mensual en CRM Confín"]},
+     incluye:["Reunión trimestral de resultados","Estados financieros trimestrales en Power BI","Proyección de renta y PPM, 1 vez al año"]},
     {id:"confin", nombre:"Confín", sub:"Tu socio financiero", precios:{T1:10,T2:15,T3:24,T4:38},
      hereda:"Todo lo del plan Horizonte, más:",
-     incluye:["Planificación tributaria anual","Asesoría financiera: créditos, inversión y financiamiento","Acompañamiento en decisiones estratégicas"]}
+     incluye:["Reunión mensual de resultados","Asesoría financiera: créditos, inversión y financiamiento","Acompañamiento en decisiones estratégicas","Flujo de caja proyectado mensual","Proyección de renta y PPM, 3 veces al año","Análisis de industria"]}
   ],
   /* Variables del perfil: cada opción suma UF al valor del plan (null = propuesta a medida) */
   preguntas: {
@@ -434,21 +430,19 @@ const CONFIG = {
   },
   comparativa: [
     ["Contabilidad completa y registros tributarios",[1,1,1]],
-    ["Tesorería: conciliación bancaria y control de pagos",[1,1,1]],
+    ["Conciliación bancaria",[1,1,1]],
     ["Declaración mensual F29",[1,1,1]],
     ["Remuneraciones (según N° de trabajadores)",[1,1,1]],
-    ["Proyección de renta y PPM",["2 al año","Mensual","Mensual"]],
-    ["Asesoría tributaria por WhatsApp y correo",[1,1,1]],
-    ["Tablero Power BI",[0,1,1]],
-    ["Reunión mensual de resultados",[0,1,1]],
-    ["Flujo de caja proyectado (CRM Confín)",[0,1,1]],
-    ["Planificación tributaria anual",[0,0,1]],
-    ["Asesoría financiera",[0,0,1]]
+    ["Asesoría por WhatsApp y correo",[1,1,1]],
+    ["Reunión de resultados",[0,"Trimestral","Mensual"]],
+    ["Estados financieros en Power BI",[0,"Trimestral","Trimestral"]],
+    ["Proyección de renta y PPM",[0,"1 vez al año","3 veces al año"]],
+    ["Flujo de caja proyectado mensual",[0,0,1]],
+    ["Asesoría financiera: créditos, inversión y financiamiento",[0,0,1]],
+    ["Acompañamiento en decisiones estratégicas",[0,0,1]],
+    ["Análisis de industria",[0,0,1]]
   ]
 };
-/* ========================================================================== */
-
-const $ = s => document.querySelector(s);
 
 /* ===== Medición (Ninja Ads): origen de la visita y eventos del embudo ===== */
 const CZ_KEYS = ["origen","gclid","gbraid","wbraid","fbclid","utm_source","utm_medium","utm_campaign"];
@@ -480,6 +474,9 @@ function czDatos(){
           pago_renta: st.pay, documentos: st.docs, trabajadores: st.trab, regimen: st.reg,
           contabilidad: st.atr, origen: czAtribucion().origen};
 }
+/* ========================================================================== */
+
+const $ = s => document.querySelector(s);
 const LOGO = document.getElementById("logoImg").src;
 const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ufFmt = n => (Math.round(n*100)/100).toLocaleString("es-CL",{minimumFractionDigits:0,maximumFractionDigits:2});
@@ -649,11 +646,12 @@ function buildDoc(cl, meta){
     <h4>Resumen ejecutivo</h4>
     <p>Estimado/a <b>${esc(cl.nom)}</b>, esta propuesta presenta cómo Confín Consultora Limitada se hará cargo de la gestión contable, tributaria y financiera de ${esc(cl.emp)}, con el plan <b>${plan.nombre}</b>.</p>
     <ul class="pts">
-      <li><b>Cumplimiento al día:</b> contabilidad, F29 y Renta anual sin atrasos ni multas.</li>
-      <li><b>Sin sorpresas en abril:</b> proyectamos tu impuesto y ajustamos tus PPM durante el año.</li>
+      <li><b>Cumplimiento al día:</b> contabilidad, conciliación bancaria, F29 y Renta anual sin atrasos ni multas.</li>
+      <li><b>Siempre acompañado:</b> asesoría por WhatsApp y correo según tu plan.</li>
+      ${idx>=1?`<li><b>Sin sorpresas en abril:</b> proyectamos tu impuesto y ajustamos tus PPM ${idx>=2?"3 veces al año":"una vez al año"}.</li>`:""}
       ${st.trab!=="0"?`<li><b>Tu equipo al día:</b> liquidaciones, Previred y Libro de Remuneraciones Electrónico.</li>`:""}
-      ${idx>=1?`<li><b>Información para decidir:</b> tablero Power BI y reunión mensual para revisar tus resultados.</li>`:""}
-      ${idx>=2?`<li><b>Un socio financiero:</b> planificación tributaria y asesoría para crecer con respaldo.</li>`:""}
+      ${idx>=1?`<li><b>Información para decidir:</b> estados financieros trimestrales en Power BI y reunión ${idx>=2?"mensual":"trimestral"} de resultados.</li>`:""}
+      ${idx>=2?`<li><b>Un socio financiero:</b> flujo de caja proyectado, análisis de industria y asesoría en créditos, inversión y decisiones estratégicas.</li>`:""}
     </ul>
   </section>
   <section>
@@ -722,7 +720,7 @@ function emailHTML(cl, q){
   else rows=`<tr><td ${td}>Plan ${q.plan.nombre} · ${esc(q.plan.sub)}</td><td ${tdr}>${ufFmt(q.v)} UF</td></tr><tr><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P}">Total mensual</td><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P};text-align:right">desde ${ufFmt(q.v)} UF</td></tr><tr><td ${td}>Renta anual (${q.n} mensualidades, ${CONFIG.rentaMes})</td><td ${tdr}>${ufFmt(q.v*q.n)} UF</td></tr>`;
   const inc = q.plan.incluye.map(i=>`<li style="margin:0 0 4px">${esc(i)}</li>`).join("");
   return `<div style="font-family:Arial,Helvetica,sans-serif;color:#252525;max-width:640px;margin:0 auto">
-  <div style="background:${P};color:#fff;padding:20px 24px;border-radius:12px 12px 0 0">${CONFIG.web?`<div style="background:#fff;border-radius:8px;padding:6px 10px;display:inline-block"><img src="${location.origin}/logo.jpg" alt="Confín Consultora Limitada" height="48" style="display:block;height:48px"></div>`:`<div style="font-size:22px;font-weight:800">Confín Consultora Limitada</div>`}<div style="margin-top:10px;font-size:13px">Cotización N° <b>${q.num}</b></div></div>
+  <div style="background:${P};color:#fff;padding:20px 24px;border-radius:12px 12px 0 0">${CONFIG.web?`<div style="background:#fff;border-radius:8px;padding:6px 10px;display:inline-block"><img src="https://raw.githubusercontent.com/esroyesenia-ship-it/cotizador-confin/main/logo.jpg" alt="Confín Consultora Limitada" height="48" style="display:block;height:48px"></div>`:`<div style="font-size:22px;font-weight:800">Confín Consultora Limitada</div>`}<div style="margin-top:10px;font-size:13px">Cotización N° <b>${q.num}</b></div></div>
   <div style="border:1px solid #E4E2E8;border-top:0;padding:24px;border-radius:0 0 12px 12px">
   <p style="font-size:16px;margin:0 0 12px">Estimado/a <b>${esc((cl.nom+" "+cl.ape).toUpperCase())}</b>,</p>
   <p style="font-size:14px;margin:0 0 12px">Te enviamos la propuesta para <b>${esc(cl.emp)}</b> con el plan <b>${q.plan.nombre}</b>.</p>
@@ -737,14 +735,23 @@ function emailHTML(cl, q){
   </div></div>`;
 }
 function internoHTML(cl, q){
-  const P="#00616F";
-  const row=(k,v)=>`<tr><td style="padding:6px 0;color:#737273;font-size:13px;width:120px">${k}</td><td style="padding:6px 0;font-size:14px;font-weight:600">${v}</td></tr>`;
+  const P="#00616F", M="#CF00A5";
+  const cel=String(cl.cel).replace(/\D/g,"").replace(/^56/,"");
+  const wa=`https://wa.me/56${cel}?text=${encodeURIComponent(q.respuesta)}`;
+  const mail=`mailto:${cl.mail}?subject=${encodeURIComponent("Tu propuesta Confín N° "+q.num)}`;
+  const btn=(h,t,c)=>`<a href="${h}" style="display:inline-block;background:${c};color:#fff;text-decoration:none;font-weight:700;padding:10px 16px;border-radius:8px;font-size:14px;margin:0 8px 8px 0">${t}</a>`;
+  const row=(k,v)=>`<tr><td style="padding:6px 12px 6px 0;color:#737273;font-size:13px;white-space:nowrap">${k}</td><td style="padding:6px 0;font-size:15px;font-weight:700">${v}</td></tr>`;
   return `<div style="font-family:Arial,Helvetica,sans-serif;color:#252525;max-width:600px">
-  <p style="font-size:18px;font-weight:800;color:${P};margin:0 0 4px">Nueva cotización N° ${q.num}</p>
-  <p style="font-size:13px;color:#737273;margin:0 0 16px">Plan ${q.plan.nombre} · ${esc(q.valorTxt)} · ya se le envió por WhatsApp y correo</p>
-  <table style="border-collapse:collapse">${row("Nombre",esc(cl.nom+" "+cl.ape))}${row("Empresa",esc(cl.emp)+(cl.rut?" · "+esc(cl.rut):""))}${row("Celular","+56 "+esc(cl.cel))}${row("Correo",esc(cl.mail))}${row("Mensaje",esc(cl.msg||"—"))}</table>
-  <p style="font-size:13px;font-weight:700;color:${P};margin:16px 0 6px">Perfil</p><ul style="font-size:13px;padding-left:18px;margin:0">${q.pf.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-  ${q.link?`<p style="margin:16px 0 0"><a href="${q.link}" style="color:${P};font-size:13px;font-weight:700">Ver la propuesta enviada</a></p>`:""}
+  <p style="font-size:20px;font-weight:800;color:${P};margin:0 0 4px">Nueva cotización N° ${q.num}</p>
+  <p style="font-size:13px;color:#737273;margin:0 0 14px">Plan ${q.plan.nombre} · ${esc(q.valorTxt)} · válida hasta ${fDate(q.val)}</p>
+  <div style="border:2px solid ${P};border-radius:10px;padding:14px 16px;margin:0 0 16px">
+  <p style="font-size:13px;font-weight:800;color:${M};margin:0 0 6px;text-transform:uppercase;letter-spacing:.5px">Datos de contacto</p>
+  <table style="border-collapse:collapse">${row("Nombre",esc(cl.nom+" "+cl.ape))}${row("Empresa",esc(cl.emp)+(cl.rut?" · RUT "+esc(cl.rut):""))}${row("Celular",`<a href="tel:+56${cel}" style="color:#252525">+56 ${cel.replace(/^(\d)(\d{4})(\d{4})$/,"$1 $2 $3")}</a>`)}${row("Correo",`<a href="mailto:${esc(cl.mail)}" style="color:#252525">${esc(cl.mail)}</a>`)}${row("Mensaje",esc(cl.msg||"—"))}${row("Origen",esc(czAtribucion().origen)+(czAtribucion().utm_campaign?" · campaña "+esc(czAtribucion().utm_campaign):""))}</table>
+  <p style="margin:12px 0 0">${btn(wa,"Escribirle por WhatsApp","#25D366")}${btn(mail,"Responderle por correo",P)}</p>
+  </div>
+  <p style="font-size:13px;font-weight:700;color:${P};margin:0 0 6px">Perfil de la empresa</p><ul style="font-size:13px;padding-left:18px;margin:0">${q.pf.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  ${q.link?`<p style="margin:16px 0 0;font-size:13px"><a href="${q.link}" style="color:${P};font-weight:700">Ver la propuesta</a> · <a href="${q.link}&dl=1" style="color:${P};font-weight:700">Descargar PDF</a></p>`:""}
+  <p style="font-size:12px;color:#737273;margin:16px 0 0">El cliente ya recibió la propuesta en su correo. Si respondes este aviso, la respuesta le llega directo al cliente.</p>
   </div>`;
 }
 const EJ = CONFIG.emailjs, ejListo = () => CONFIG.web && EJ.publicKey && EJ.serviceId && EJ.templateId;
@@ -771,7 +778,12 @@ function sendAviso(cl, q, cel){
   const box=$("#sendst");
   box.className="sendst"; box.textContent="Enviando tu solicitud…"; $("#sendBtn").disabled=true;
   const waCliente = `https://wa.me/56${cel}?text=${encodeURIComponent(q.respuesta)}`;
-  const aviso = fetch(`https://formsubmit.co/ajax/${CONFIG.avisoCorreo}`,{
+  const avisoEJ = () => esperarEmailJS(8000).then(()=>emailjs.send(EJ.serviceId, EJ.templateAviso, {
+      asunto:`Nueva cotización N° ${q.num} – ${cl.emp} – ${cl.nom} ${cl.ape}`, reply_to: cl.mail,
+      cliente:`${cl.nom} ${cl.ape}`, celular:"+56 "+cel, correo:cl.mail, cotizacion:q.num, origen:czAtribucion().origen,
+      aviso_html: internoHTML(cl, q)
+    }, {publicKey:EJ.publicKey}));
+  const formSubmit = () => fetch(`https://formsubmit.co/ajax/${CONFIG.avisoCorreo}`,{
     method:"POST", headers:{"Content-Type":"application/json","Accept":"application/json"},
     body: JSON.stringify({
       _subject:`Nueva cotización N° ${q.num} – ${cl.emp}`, _template:"table", _captcha:"false",
@@ -784,11 +796,13 @@ function sendAviso(cl, q, cel){
       "Campaña":czAtribucion().utm_campaign||"—", "Consentimiento":"Aceptó la política de privacidad", _replyto: cl.mail
     })
   }).then(r=>r.json().catch(()=>({})).then(j=>{ if(!r.ok || j.success==="false" || j.success===false) throw ("formsubmit: "+(j.message||r.status)); }));
+  /* Aviso a Confín: EmailJS (plantilla "Aviso Confín"); si falla, respaldo por FormSubmit */
+  const aviso = (EJ.templateAviso && ejListo()) ? avisoEJ().catch(e=>{ console.error("Aviso EmailJS falló, uso respaldo:", e); return formSubmit(); }) : formSubmit();
   const correo = correoCliente(cl, q);
   Promise.allSettled([aviso, correo]).then(([a, c])=>{
     if(a.status==="fulfilled" || c.status==="fulfilled"){ czTrack("cotizador_solicitud", {...czDatos(), cotizacion:q.num}); czPlanilla(cl, q); }
     else czTrack("cotizador_error_envio", {plan: st.plan});
-    if(a.status==="rejected") console.error("Aviso FormSubmit falló:", a.reason);
+    if(a.status==="rejected") console.error("Aviso interno falló:", a.reason);
     if(c.status==="rejected") console.error("Correo EmailJS falló:", c.reason);
     if(c.status==="fulfilled"){
       box.className="sendst ok"; box.textContent=`Listo: te enviamos la propuesta a tu correo (${cl.mail}) — revisa también spam. Te contactaremos por WhatsApp al +56 ${cel}. También puedes descargarla aquí mismo.`;
@@ -824,6 +838,14 @@ function sendMake(cl, q){
     .finally(()=>{ $("#sendBtn").disabled=false; });
 }
 
+function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>el.hidden=true,2200); }
+if(CONFIG.web){
+  const b=$("#pdf"); b.hidden=false;
+  const sc=document.createElement("script");
+  sc.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+  document.head.appendChild(sc);
+  b.onclick=()=>descargarPDF();
+}
 /* Registro en planilla de Google (solo si CONFIG.planilla tiene la URL de Apps Script) */
 function czPlanilla(cl, q){
   if(!CONFIG.planilla) return;
@@ -837,14 +859,6 @@ function czPlanilla(cl, q){
   }catch(_){}
 }
 
-function toast(t){ const el=$("#toast"); el.textContent=t; el.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>el.hidden=true,2200); }
-if(CONFIG.web){
-  const b=$("#pdf"); b.hidden=false;
-  const sc=document.createElement("script");
-  sc.src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-  document.head.appendChild(sc);
-  b.onclick=()=>descargarPDF();
-}
 function descargarPDF(){
   czTrack("cotizador_pdf", {plan: st.plan, compartida: SHARED?"si":"no"});
   const num = ($("#doc .qn b")||{}).textContent || "propuesta";
