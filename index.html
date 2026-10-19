@@ -260,6 +260,26 @@ footer b{color:var(--petroleo)}
 .pdfmode .doc section{break-inside:avoid}
 .coverlogo{background:#fff;border-radius:14px;padding:8px 12px;width:206px}
 .coverlogo img{display:block;width:182px;height:110px;max-width:none}
+/* ---- Pack Formalízate ---- */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
+.tab{border:1.5px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:10px 18px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit}
+.tab.on{border-color:var(--petroleo);background:var(--petroleo);color:#fff}
+.tab small{display:block;font-weight:500;font-size:11px;opacity:.85}
+.flow{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.fstep{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.fstep .k{flex:none;width:28px;height:28px;border-radius:50%;background:var(--tint-p);color:var(--petroleo);display:grid;place-items:center;font-weight:800;font-size:13px}
+.fstep b{display:block;font-size:14px;line-height:1.3}
+.fstep span{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+.fstep.off{opacity:.38}
+.fstep.off .k{background:var(--line);color:var(--muted)}
+.fstep .who{display:inline-block;margin-top:6px;font-size:11px;font-weight:700;color:var(--magenta)}
+.docs{display:grid;gap:8px}
+.doc-i{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.4}
+.doc-i .ic{flex:none;width:22px;height:22px;border-radius:6px;border:1.5px solid var(--petroleo);display:grid;place-items:center;color:var(--petroleo);font-size:12px;font-weight:800;margin-top:1px}
+.doc-i small{display:block;color:var(--muted);font-size:12px}
+.cond{margin-top:14px;border-left:3px solid var(--magenta);padding:8px 12px;font-size:13px;color:var(--ink-2);background:var(--tint-m);border-radius:0 10px 10px 0}
+.cond b{color:var(--magenta)}
+
 </style>
 </head>
 <body>
@@ -272,9 +292,56 @@ footer b{color:var(--petroleo)}
 
   <section class="hero">
     <span class="eyebrow">Cotizador en línea</span>
-    <h1>Encuentra el plan para tu empresa y cotiza <em>en 1 minuto</em></h1>
-    <p>Responde 6 preguntas y te mostramos el valor de cada plan según tu empresa.</p>
+    <h1 id="heroH">Encuentra el plan para tu empresa y cotiza <em>en 1 minuto</em></h1>
+    <p id="heroP">Responde 6 preguntas y te mostramos el valor de cada plan según tu empresa.</p>
   </section>
+
+  <div class="tabs" role="tablist" aria-label="Tipo de servicio">
+    <button class="tab on" type="button" role="tab" data-modo="mensual" aria-selected="true">Servicios mensuales<small>Ya tengo mi empresa funcionando</small></button>
+    <button class="tab" type="button" role="tab" data-modo="pack" aria-selected="false">Pack Formalízate<small>Quiero crear o formalizar mi empresa</small></button>
+  </div>
+
+  <div id="modoPack" hidden>
+  <div class="step">
+    <div class="step-h"><span class="n">1</span><div><h2>Cuéntanos tu situación</h2><p>Con esto armamos tu pack y la lista de documentos.</p></div></div>
+    <div class="panel qgrid">
+      <div class="q">
+        <div class="qt">¿En qué etapa estás?</div>
+        <div class="opts" id="qEtapa" role="radiogroup" aria-label="Etapa"></div>
+      </div>
+      <div class="q" id="qTipoBox">
+        <div class="qt">¿Qué tipo de empresa quieres crear? <small>Si no sabes, te asesoramos</small></div>
+        <div class="opts" id="qTipo" role="radiogroup" aria-label="Tipo de empresa"></div>
+      </div>
+      <div class="q" id="qSociosBox">
+        <div class="qt">¿Cuántos socios o accionistas tendrá?</div>
+        <div class="opts" id="qSocios" role="radiogroup" aria-label="Socios"></div>
+      </div>
+      <div class="q">
+        <div class="qt">¿Qué documentos vas a emitir?</div>
+        <div class="opts" id="qEmite" role="radiogroup" aria-label="Documentos a emitir"></div>
+      </div>
+      <div class="q" id="qFirmaBox">
+        <div class="qt">¿Todos los socios tienen firma electrónica avanzada? <small>Se usa para firmar la constitución</small></div>
+        <div class="opts two" id="qFirma" role="radiogroup" aria-label="Firma electrónica avanzada"></div>
+        <p class="hint" id="firmaHint" hidden>Te indicamos cómo obtenerla. Su costo lo paga cada socio directamente al proveedor; también se puede firmar ante notario.</p>
+      </div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="step-h"><span class="n">2</span><div><h2>Esto hacemos por ti</h2><p>Paso a paso, hasta que tu empresa queda lista para operar.</p></div></div>
+    <div class="flow" id="flow"></div>
+  </div>
+  <div class="step">
+    <div class="step-h"><span class="n">3</span><div><h2>Documentos que necesitamos</h2><p>El trámite parte cuando recibimos todo.</p></div></div>
+    <div class="panel">
+      <div class="docs" id="docsList"></div>
+      <div class="cond"><b>Importante:</b> los plazos corren desde que recibimos la documentación completa y correcta. Las revisiones y tiempos de respuesta del SII y del Registro de Empresas no dependen de Confín. Los costos de terceros (firma electrónica avanzada, notaría si se requiere) los paga el cliente.</div>
+    </div>
+  </div>
+  </div>
+
+  <div id="modoMensual">
 
   <div class="step">
     <div class="step-h"><span class="n">1</span><div><h2>Cuéntanos de tu empresa</h2><p>Con esto calculamos el valor de tu plan.</p></div></div>
@@ -317,6 +384,7 @@ footer b{color:var(--petroleo)}
     <div class="step-h"><span class="n">3</span><div><h2>¿Cómo prefieres pagar la Renta anual?</h2><p>La declaración de Renta (F22 y declaraciones juradas) equivale a 2 mensualidades de tu plan.</p></div></div>
     <div class="pay" id="qPay" role="radiogroup" aria-label="Forma de pago de la Renta"></div>
   </div>
+  </div>
 
   <div class="summary" aria-live="polite">
     <div>
@@ -327,7 +395,7 @@ footer b{color:var(--petroleo)}
     </div>
     <button class="btn btn-mag" id="open1" type="button">Solicitar propuesta formal</button>
   </div>
-  <div class="note"><b>Valor referencial.</b> El precio final se confirma después de un diagnóstico de tu empresa (volumen real, estado de la contabilidad y necesidades específicas), por lo que puede variar.</div>
+  <div class="note" id="noteTxt"><b>Valor referencial.</b> El precio final se confirma después de un diagnóstico de tu empresa (volumen real, estado de la contabilidad y necesidades específicas), por lo que puede variar.</div>
   <p class="fine" id="ufNote"></p>
 
   <footer><b>Confín Consultora Limitada</b> · Contabilidad, tributaria, remuneraciones y finanzas para pymes · WhatsApp +56 9 8463 0104</footer>
@@ -428,6 +496,31 @@ const CONFIG = {
       {id:"si", nombre:"Sí", uf:0.5}
     ]
   },
+  /* Pack Formalízate: pago único en UF (null = a medida) */
+  pack: {
+    nombre: "Pack Formalízate",
+    descuento: 0.5,          // 50% de descuento si contrata un plan mensual
+    permanencia: 12,         // meses mínimos del plan mensual para el descuento
+    etapa: [
+      {id:"completo", nombre:"Aún no tengo empresa", det:"Constitución + inicio de actividades", uf:4},
+      {id:"inicio", nombre:"Ya constituí mi empresa", det:"Me falta el inicio de actividades en el SII", uf:2.5},
+      {id:"natural", nombre:"Soy persona natural", det:"Inicio de actividades como persona", uf:1.5}
+    ],
+    tipo: [
+      {id:"spa", nombre:"SpA", det:"La más usada, 1 o más accionistas", uf:0},
+      {id:"eirl", nombre:"EIRL", det:"1 solo dueño", uf:0},
+      {id:"ltda", nombre:"Limitada", det:"2 o más socios", uf:0.5}
+    ],
+    socios: [
+      {id:"s1", nombre:"1", uf:0}, {id:"s23", nombre:"2 a 3", uf:1}, {id:"s4", nombre:"4 o más", det:"a medida", uf:null}
+    ],
+    emite: [
+      {id:"fact", nombre:"Facturas", uf:0}, {id:"bol", nombre:"Boletas", uf:0}, {id:"ambas", nombre:"Facturas y boletas", uf:0.5}
+    ],
+    firma: [
+      {id:"si", nombre:"Sí, todos"}, {id:"no", nombre:"No / no sé"}
+    ]
+  },
   comparativa: [
     ["Contabilidad completa y registros tributarios",[1,1,1]],
     ["Conciliación bancaria",[1,1,1]],
@@ -469,6 +562,8 @@ function czTrack(nombre, datos){ try{ if(typeof gtag==="function") gtag("event",
 let czIniciado = false;
 function czInicio(){ if(czIniciado) return; czIniciado = true; czTrack("cotizador_inicio", {origen: czAtribucion().origen}); }
 function czDatos(){
+  if(st.modo==="pack"){ const v=packPrecio(); return {plan:"pack", modo:"pack", valor_uf: v===null?0:v, a_medida: v===null?"si":"no",
+    etapa: st.etapa, tipo: st.tipo, socios: st.socios, emite: st.emite, origen: czAtribucion().origen}; }
   const v = price(st.plan), m = v===null?null:(st.pay==="cuotas"?cuota(v):v);
   return {plan: st.plan, valor_uf: m===null?0:Math.round(m*100)/100, a_medida: v===null?"si":"no",
           pago_renta: st.pay, documentos: st.docs, trabajadores: st.trab, regimen: st.reg,
@@ -483,10 +578,13 @@ const ufFmt = n => (Math.round(n*100)/100).toLocaleString("es-CL",{minimumFracti
 const clp = n => "$" + Math.round(n).toLocaleString("es-CL");
 let UF = CONFIG.uf, UF_FECHA = CONFIG.ufFecha;
 const P = CONFIG.preguntas;
-const st = {docs:"T2", trab:"1-5", reg:"14D3", emi:"no", f50:"no", atr:"ok", plan:"horizonte", pay:"aparte"};
+const st = {docs:"T2", trab:"1-5", reg:"14D3", emi:"no", f50:"no", atr:"ok", plan:"horizonte", pay:"aparte",
+            modo:"mensual", etapa:"completo", tipo:"spa", socios:"s1", emite:"fact", firma:"si"};
+const PK = CONFIG.pack;
 const check = c => `<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="${c}" opacity=".15"/><path d="M4.5 8.3 7 10.5l4.5-5" stroke="${c}" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const find = (k)=>P[k].find(o=>o.id===st[k]);
-const KEYS = [["docs",()=>P.docs],["trab",()=>P.trab],["reg",()=>P.reg],["emi",()=>P.emi],["f50",()=>P.f50],["atr",()=>P.atr],["plan",()=>CONFIG.planes],["pay",()=>[{id:"aparte"},{id:"cuotas"}]]];
+const KEYS = [["docs",()=>P.docs],["trab",()=>P.trab],["reg",()=>P.reg],["emi",()=>P.emi],["f50",()=>P.f50],["atr",()=>P.atr],["plan",()=>CONFIG.planes],["pay",()=>[{id:"aparte"},{id:"cuotas"}]],
+  ["modo",()=>[{id:"mensual"},{id:"pack"}]],["etapa",()=>PK.etapa],["tipo",()=>PK.tipo],["socios",()=>PK.socios],["emite",()=>PK.emite],["firma",()=>PK.firma]];
 const packLink = (cl,num,hoy,uf) => [
   "1", KEYS.map(([k,l])=>Math.max(0,l().findIndex(o=>o.id===st[k]))).join(""), num,
   `${hoy.getFullYear()}${String(hoy.getMonth()+1).padStart(2,"0")}${String(hoy.getDate()).padStart(2,"0")}`, Math.round(uf*100), cl.nom, cl.ape, cl.emp, cl.rut||""
@@ -553,7 +651,86 @@ function renderPay(){
   ].map(o=>`<label class="opt"><input type="radio" name="pay" id="pay-${o.id}" value="${o.id}" ${o.id===st.pay?"checked":""}><span>${o.nombre}<i>${o.det}</i></span></label>`).join("");
 }
 
+/* ---------- Pack Formalízate ---------- */
+const pk = k => PK[k].find(o=>o.id===st[k]);
+function packNormalizar(){
+  if(st.tipo==="eirl") st.socios="s1";
+  if(st.tipo==="ltda" && st.socios==="s1") st.socios="s23";
+}
+function packPrecio(){
+  let v = pk("etapa").uf;
+  if(st.etapa==="completo"){ const so=pk("socios").uf; if(so===null) return null; v += so + pk("tipo").uf; }
+  return v + pk("emite").uf;
+}
+function packPasos(){
+  const c=st.etapa==="completo", nat=st.etapa==="natural", fb=st.emite!=="bol", bo=st.emite!=="fact";
+  return [
+    {on:c, t:"Constitución de la empresa", s:"Redactamos y tramitamos la constitución en el Registro de Empresas y Sociedades (Tu Empresa en un Día)."},
+    {on:true, t:"Inicio de actividades en el SII", s:nat?"Inicio de actividades como persona natural en el portal del SII.":"Obtención del RUT de la empresa e inicio de actividades en el portal del SII."},
+    {on:true, t:"Selección de actividad económica", s:"Elegimos contigo los códigos de actividad que calzan con tu giro, para evitar problemas futuros."},
+    {on:true, t:"Selección de régimen tributario", s:nat?"Te explicamos tus obligaciones y cómo tributas como persona.":"Te asesoramos para elegir el régimen: Pro Pyme General (14 D N°3), Pro Pyme Transparente (14 D N°8) o General (14 A)."},
+    {on:fb, t:"Facturador gratuito del SII", s:"Inscripción y habilitación para emitir facturas electrónicas sin costo."},
+    {on:bo, t:"Boleta electrónica gratuita del SII", s:"Habilitación para emitir boletas de ventas y servicios electrónicas sin costo."}
+  ];
+}
+function packDocs(){
+  const c=st.etapa==="completo", fb=st.emite!=="bol", bo=st.emite!=="fact", D=[];
+  const quien = c ? (st.socios==="s1"?"del dueño o accionista":"de cada socio o accionista") : (st.etapa==="natural"?"":"del representante legal");
+  D.push(["Cédula de identidad vigente "+quien,"Foto por ambos lados"]);
+  D.push(["Clave Única o Clave Tributaria "+quien,"Para ingresar a los portales del Estado y del SII"]);
+  if(c){ D.push(["Firma electrónica avanzada "+quien, st.firma==="no"?"Si no la tienen, te orientamos para obtenerla o firmar en notaría":"Para firmar la constitución en línea"]);
+    D.push(["Datos de la empresa","Nombre o razón social, nombre de fantasía, giro, capital y aporte de cada socio, y quién la administra"]); }
+  if(st.etapa==="inicio") D.push(["RUT de la empresa y certificado de constitución","Descargables desde el Registro de Empresas y Sociedades"]);
+  D.push(["Domicilio comercial y su respaldo","Contrato de arriendo, comprobante de propiedad o autorización del dueño, según corresponda"]);
+  D.push(["Descripción de lo que vas a vender o prestar","Con esto definimos la actividad económica y el régimen"]);
+  if(fb||bo) D.push(["Correo y celular de contacto para el SII","Para la habilitación del facturador y la boleta electrónica"]);
+  return D.map(([a,b])=>[a.trim(),b]);
+}
+function packPerfil(){
+  const out=[pk("etapa").nombre+" ("+pk("etapa").det.toLowerCase()+")"];
+  if(st.etapa==="completo"){ out.push("Tipo de empresa: "+pk("tipo").nombre); out.push("Socios o accionistas: "+pk("socios").nombre); out.push("Firma electrónica avanzada: "+(st.firma==="si"?"todos la tienen":"por obtener")); }
+  out.push("Emitirá: "+pk("emite").nombre.toLowerCase());
+  return out;
+}
+const PACK_PLAN = () => ({id:"pack", nombre:PK.nombre, sub:"Formaliza tu empresa", incluye:packPasos().filter(x=>x.on).map(x=>x.t)});
+const conDesc = v => v*(1-PK.descuento);
+function renderPack(){
+  packNormalizar();
+  radios($("#qEtapa"),"etapa",PK.etapa); radios($("#qTipo"),"tipo",PK.tipo); radios($("#qSocios"),"socios",PK.socios);
+  radios($("#qEmite"),"emite",PK.emite); radios($("#qFirma"),"firma",PK.firma);
+  const c=st.etapa==="completo";
+  $("#qTipoBox").hidden=!c; $("#qSociosBox").hidden=!c; $("#qFirmaBox").hidden=!c;
+  $("#firmaHint").hidden=st.firma!=="no";
+  let n=0;
+  $("#flow").innerHTML=packPasos().map(p=>`<div class="fstep ${p.on?"":"off"}"><span class="k">${p.on?++n:"–"}</span><div><b>${p.t}</b><span>${p.on?p.s:"No aplica a tu caso"}</span></div></div>`).join("");
+  $("#docsList").innerHTML=packDocs().map(d=>`<div class="doc-i"><span class="ic">✓</span><div>${esc(d[0])}<small>${esc(d[1])}</small></div></div>`).join("");
+}
+
 function render(){
+  const pack = st.modo==="pack";
+  document.querySelectorAll(".tab").forEach(t=>{ const on=t.dataset.modo===st.modo; t.classList.toggle("on",on); t.setAttribute("aria-selected",on); });
+  $("#modoPack").hidden=!pack; $("#modoMensual").hidden=pack;
+  $("#heroH").innerHTML = pack ? `¿Vas a emprender? <em>Formalízate</em> con nosotros` : `Encuentra el plan para tu empresa y cotiza <em>en 1 minuto</em>`;
+  $("#heroP").textContent = pack ? "Creamos tu empresa y la dejamos lista para emitir facturas y boletas." : "Responde 6 preguntas y te mostramos el valor de cada plan según tu empresa.";
+  $("#noteTxt").innerHTML = pack
+    ? `<b>${Math.round(PK.descuento*100)}% de descuento en el pack</b> si contratas cualquiera de nuestros planes mensuales por mínimo ${PK.permanencia} meses. <b>Valor referencial:</b> el precio final se confirma después de revisar tu caso y la documentación.`
+    : `<b>Valor referencial.</b> El precio final se confirma después de un diagnóstico de tu empresa (volumen real, estado de la contabilidad y necesidades específicas), por lo que puede variar.`;
+  if(pack){
+    renderPack();
+    const v=packPrecio();
+    $("#sumLbl").textContent = `${PK.nombre} · pago único`; $("#mPlan").textContent = PK.nombre;
+    if(v===null){
+      $("#sumUF").textContent = "Propuesta a medida"; $("#sumCLP").textContent = "Por la cantidad de socios, revisamos tu caso y te enviamos una propuesta personalizada.";
+      $("#sumRenta").textContent = ""; $("#mUF").textContent = "A medida"; $("#mCLP").textContent = "";
+    } else {
+      $("#sumUF").innerHTML = `desde ${ufFmt(v)} <small>UF</small>`;
+      $("#sumCLP").textContent = `≈ ${clp(v*UF)} · pago único · exento de IVA`;
+      $("#sumRenta").textContent = `Con un plan mensual por ${PK.permanencia} meses: ${ufFmt(conDesc(v))} UF (≈ ${clp(conDesc(v)*UF)}), ${Math.round(PK.descuento*100)}% de descuento`;
+      $("#mUF").textContent = `desde ${ufFmt(v)} UF`; $("#mCLP").textContent = `≈ ${clp(v*UF)}`;
+    }
+    $("#ufNote").textContent = `Valores en pesos calculados con UF ${clp(UF)} (${UF_FECHA}). Se factura en pesos al valor de la UF del día de emisión.`;
+    return;
+  }
   renderPlans(); renderPay();
   $("#atrHint").hidden = st.atr==="ok";
   const plan = CONFIG.planes.find(p=>p.id===st.plan), v = price(st.plan);
@@ -574,13 +751,18 @@ function render(){
   $("#ufNote").textContent = `Valores en pesos calculados con UF ${clp(UF)} (${UF_FECHA}). Se factura en pesos al valor de la UF del día de emisión.`;
 }
 
-document.addEventListener("change", e=>{ const t=e.target; if(t.type==="radio" && t.name in st){ st[t.name]=t.value; render(); if(!SHARED) czInicio(); } });
+document.addEventListener("change", e=>{ const t=e.target; if(t.type==="radio" && t.name in st){ st[t.name]=t.value; render(); if(!SHARED) czInicio(); if(st.modo==="pack") setTimeout(()=>{ const el=document.getElementById(t.name+"-"+st[t.name]); if(el) el.focus({preventScroll:true}); },0); } });
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{ if(st.modo===b.dataset.modo) return; st.modo=b.dataset.modo; render(); czInicio(); czTrack("cotizador_modo",{modo:st.modo}); }));
 $("#plans").addEventListener("click", e=>{ const p=e.target.closest(".plan"); if(p){ st.plan=p.dataset.plan; render(); czInicio(); czTrack("cotizador_plan", czDatos()); $(`.plan[data-plan="${st.plan}"]`).focus({preventScroll:true}); }});
 $("#plans").addEventListener("keydown", e=>{ if((e.key==="Enter"||e.key===" ") && e.target.classList.contains("plan")){ e.preventDefault(); st.plan=e.target.dataset.plan; render(); $(`.plan[data-plan="${st.plan}"]`).focus(); }});
 
 /* Modal */
 const ov=$("#overlay");
 function open(){
+  if(st.modo==="pack"){ const v=packPrecio();
+    $("#recap").innerHTML = `<span><b>${PK.nombre}</b> · ${esc(pk("etapa").nombre)}</span><span><b>${v===null?"A medida":"desde "+ufFmt(v)+" UF"}</b></span>`;
+    ov.hidden=false; $("#vForm").hidden=false; $("#vDoc").hidden=true; document.body.style.overflow="hidden";
+    czInicio(); czTrack("cotizador_formulario", czDatos()); setTimeout(()=>$("#fNom").focus(),50); return; }
   const plan=CONFIG.planes.find(p=>p.id===st.plan), v=price(st.plan);
   const m = v===null?null:(st.pay==="cuotas"?cuota(v):v);
   $("#recap").innerHTML = `<span>Plan <b>${plan.nombre}</b> · ${esc(perfil()[0])}</span><span><b>${m===null?"A medida":"desde "+ufFmt(m)+" UF/mes"}</b></span>`;
@@ -616,6 +798,7 @@ $("#form").addEventListener("submit", e=>{
 });
 
 function buildDoc(cl, meta){
+  if(st.modo==="pack") return buildDocPack(cl, meta);
   const plan=CONFIG.planes.find(p=>p.id===st.plan), idx=CONFIG.planes.indexOf(plan);
   const v=price(st.plan), n=CONFIG.rentaMensualidades, num=meta?meta.n:qNum(), hoy=meta?new Date(meta.h):new Date(), val=meta?new Date(meta.v):new Date(Date.now()+CONFIG.validezDias*864e5);
   const cell=(x,on)=>`<td class="${on?"on":""}">${x===1?`<span class="y">✓</span>`:x===0?`<span class="no">—</span>`:esc(x)}</td>`;
@@ -709,13 +892,87 @@ function buildDoc(cl, meta){
   if(meta) $("#sendst").hidden=true; else sendMake(cl, {num, plan, v, n, val, pf, link, pParam, valorTxt, respuesta});
 }
 
+function buildDocPack(cl, meta){
+  const v=packPrecio(), num=meta?meta.n:qNum(), hoy=meta?new Date(meta.h):new Date(), val=meta?new Date(meta.v):new Date(Date.now()+CONFIG.validezDias*864e5);
+  const pf=packPerfil(), pasos=packPasos().filter(x=>x.on), docs=packDocs(), pct=Math.round(PK.descuento*100);
+  const econ = v===null
+    ? `<tr><td>${PK.nombre}<small>${esc(pk("etapa").nombre)}</small></td><td>a medida</td></tr>
+       <tr class="tot"><td>Valor del pack<small>Te contactamos para definirlo según tu caso</small></td><td>A medida</td></tr>`
+    : `<tr><td>${PK.nombre}<small>${esc(pk("etapa").nombre)} · pago único</small></td><td>${ufFmt(v)} UF</td></tr>
+       <tr class="tot"><td>Valor del pack<small>≈ ${clp(v*UF)} con UF de ${UF_FECHA}</small></td><td>desde ${ufFmt(v)} UF</td></tr>
+       <tr><td>Con plan mensual por ${PK.permanencia} meses<small>${pct}% de descuento · ≈ ${clp(conDesc(v)*UF)}</small></td><td>${ufFmt(conDesc(v))} UF</td></tr>`;
+  $("#doc").innerHTML = `
+  <div class="cover">
+    <div class="coverlogo"><img src="${LOGO}" alt="Confín Consultora Limitada" width="182" height="110"></div>
+    <h2>Propuesta ${PK.nombre}: crea y formaliza tu empresa</h2>
+    <div class="for">
+      <div>Propuesta preparada para:<b>${esc(cl.emp)}</b>Attn: ${esc((cl.nom+" "+cl.ape).toUpperCase())}${cl.rut?`<br>RUT ${esc(cl.rut)}`:""}</div>
+      <div class="qn">Cotización N° <b>${num}</b><br>Santiago, ${fLong(hoy)}</div>
+    </div>
+  </div>
+  <section>
+    <h4>Resumen ejecutivo</h4>
+    <p>Estimado/a <b>${esc(cl.nom)}</b>, esta propuesta presenta cómo Confín Consultora Limitada se hará cargo de formalizar ${esc(cl.emp)}, para que quede lista para operar y emitir sus documentos tributarios.</p>
+    <ul class="pts">
+      <li><b>Todo en un solo lugar:</b> nos encargamos de los trámites ante el ${st.etapa==="completo"?"Registro de Empresas y Sociedades y el ":""}SII.</li>
+      <li><b>Bien hecho desde el inicio:</b> te asesoramos en la actividad económica y el régimen tributario, para evitar problemas futuros.</li>
+      <li><b>Lista para vender:</b> quedas habilitado/a para emitir ${esc(pk("emite").nombre.toLowerCase())} con los sistemas gratuitos del SII.</li>
+      <li><b>${pct}% de descuento</b> en el pack si contratas un plan mensual por mínimo ${PK.permanencia} meses.</li>
+    </ul>
+  </section>
+  <section>
+    <h4>Tu situación</h4>
+    <ul class="pts">${pf.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  </section>
+  <section>
+    <h4>Esto hacemos por ti</h4>
+    <ul class="pts">${pasos.map((x,i)=>`<li><b>${i+1}. ${esc(x.t)}:</b> ${esc(x.s)}</li>`).join("")}</ul>
+  </section>
+  <section>
+    <h4>Documentos que necesitamos</h4>
+    <ul class="pts">${docs.map(d=>`<li><b>${esc(d[0])}.</b> ${esc(d[1])}.</li>`).join("")}</ul>
+  </section>
+  <section>
+    <h4>Propuesta económica</h4>
+    <table class="econ"><tbody>${econ}</tbody></table>
+    <p style="margin-top:14px"><b>Condiciones comerciales</b></p>
+    <ul class="pts">
+      <li><b>Condicionado a la documentación:</b> el trámite comienza cuando recibimos la documentación completa y correcta. Los plazos del SII y del Registro de Empresas no dependen de Confín.</li>
+      <li>Valores en UF, pago único, exentos de IVA. Se facturan en pesos al valor de la UF del día de emisión.</li>
+      <li>El ${pct}% de descuento aplica al contratar un plan mensual por mínimo ${PK.permanencia} meses. Si el contrato termina antes, se cobra el descuento en proporción a los meses que faltan.</li>
+      <li>No incluye costos de terceros (firma electrónica avanzada, notaría si se requiere, patente municipal u otros permisos).</li>
+    </ul>
+    <div class="valid">Esta propuesta es válida hasta el <b>${fDate(val)}</b>.</div>
+    <div class="sign"><b>Equipo Confín Consultora Limitada</b>🧭 Tu horizonte es nuestro trabajo 🚀 · WhatsApp +56 9 8463 0104</div>
+  </section>`;
+  const plan = PACK_PLAN();
+  const valorTxt = v===null?"propuesta a medida":`desde ${ufFmt(v)} UF (pago único)`;
+  const link = CONFIG.web ? `${location.origin}${location.pathname}?p=${packLink(cl,num,hoy,UF)}` : "";
+  const nombre = `${cl.nom} ${cl.ape}`.trim();
+  summary = [`Hola Confín, ${meta?"revisé":"acabo de solicitar"} la cotización N° *${num}* del *${PK.nombre}* para *${cl.emp}* y me gustaría avanzar.`, ``, `Mi nombre es *${nombre}*.`].join("\n");
+  const respuesta = [
+    `Hola ${cl.nom}`, ``,
+    `Te enviamos la cotización del *${PK.nombre}* para *${cl.emp}* que solicitaste — válida por ${CONFIG.validezDias} días.`, ``,
+    link?`Descarga el PDF aquí:\n${link}&dl=1`:null, link?``:null,
+    `Si tienes alguna duda, responde este mensaje y te ayudamos.`, ``,
+    `*Equipo Confín Consultora Limitada*`, `Tu horizonte es nuestro trabajo`
+  ].filter(x=>x!==null).join("\n");
+  RESPUESTA = respuesta;
+  $("#edit").textContent = meta ? "Hacer otra cotización" : "Modificar";
+  $("#vForm").hidden=true; $("#vDoc").hidden=false; ov.scrollTop=0;
+  const pParam = CONFIG.web ? packLink(cl,num,hoy,UF) : "";
+  if(meta) $("#sendst").hidden=true; else sendMake(cl, {num, plan, v, n:0, val, pf, link, pParam, valorTxt, respuesta, pack:true});
+}
+
 /* ---------- Envío automático (Make → WhatsApp + correo) ---------- */
 function emailHTML(cl, q){
   const P="#00616F", M="#CF00A5", G="#737273";
   const td='style="padding:10px 0;border-bottom:1px solid #E4E2E8;font-size:14px"';
   const tdr='style="padding:10px 0;border-bottom:1px solid #E4E2E8;font-size:14px;text-align:right;font-weight:600;white-space:nowrap"';
   let rows;
-  if(q.v===null) rows=`<tr><td ${td}>Plan ${q.plan.nombre}</td><td ${tdr}>A medida</td></tr>`;
+  if(q.pack) rows = q.v===null ? `<tr><td ${td}>${PK.nombre}</td><td ${tdr}>A medida</td></tr>`
+    : `<tr><td ${td}>${PK.nombre} · pago único</td><td ${tdr}>${ufFmt(q.v)} UF</td></tr><tr><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P}">Con plan mensual por ${PK.permanencia} meses (${Math.round(PK.descuento*100)}% dcto.)</td><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P};text-align:right">${ufFmt(conDesc(q.v))} UF</td></tr>`;
+  else if(q.v===null) rows=`<tr><td ${td}>Plan ${q.plan.nombre}</td><td ${tdr}>A medida</td></tr>`;
   else if(st.pay==="cuotas") rows=`<tr><td ${td}>Plan ${q.plan.nombre} · ${esc(q.plan.sub)}</td><td ${tdr}>${ufFmt(q.v)} UF</td></tr><tr><td ${td}>Renta anual en 12 cuotas</td><td ${tdr}>${ufFmt(cuota(q.v)-q.v)} UF</td></tr><tr><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P}">Total mensual</td><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P};text-align:right">desde ${ufFmt(cuota(q.v))} UF</td></tr>`;
   else rows=`<tr><td ${td}>Plan ${q.plan.nombre} · ${esc(q.plan.sub)}</td><td ${tdr}>${ufFmt(q.v)} UF</td></tr><tr><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P}">Total mensual</td><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P};text-align:right">desde ${ufFmt(q.v)} UF</td></tr><tr><td ${td}>Renta anual (${q.n} mensualidades, ${CONFIG.rentaMes})</td><td ${tdr}>${ufFmt(q.v*q.n)} UF</td></tr>`;
   const inc = q.plan.incluye.map(i=>`<li style="margin:0 0 4px">${esc(i)}</li>`).join("");
@@ -723,11 +980,11 @@ function emailHTML(cl, q){
   <div style="background:${P};color:#fff;padding:20px 24px;border-radius:12px 12px 0 0">${CONFIG.web?`<div style="background:#fff;border-radius:8px;padding:6px 10px;display:inline-block"><img src="https://raw.githubusercontent.com/esroyesenia-ship-it/cotizador-confin/main/logo.jpg" alt="Confín Consultora Limitada" height="48" style="display:block;height:48px"></div>`:`<div style="font-size:22px;font-weight:800">Confín Consultora Limitada</div>`}<div style="margin-top:10px;font-size:13px">Cotización N° <b>${q.num}</b></div></div>
   <div style="border:1px solid #E4E2E8;border-top:0;padding:24px;border-radius:0 0 12px 12px">
   <p style="font-size:16px;margin:0 0 12px">Estimado/a <b>${esc((cl.nom+" "+cl.ape).toUpperCase())}</b>,</p>
-  <p style="font-size:14px;margin:0 0 12px">Te enviamos la propuesta para <b>${esc(cl.emp)}</b> con el plan <b>${q.plan.nombre}</b>.</p>
-  <p style="font-size:13px;font-weight:700;color:${P};margin:18px 0 6px">Perfil de tu empresa</p><ul style="font-size:13px;color:#48464D;padding-left:18px;margin:0">${q.pf.map(x=>`<li style="margin:0 0 4px">${esc(x)}</li>`).join("")}</ul>
-  <p style="font-size:13px;font-weight:700;color:${P};margin:18px 0 6px">Tu plan incluye</p><ul style="font-size:13px;color:#48464D;padding-left:18px;margin:0">${q.plan.hereda?`<li style="margin:0 0 4px"><b>${q.plan.hereda}</b></li>`:""}${inc}</ul>
+  <p style="font-size:14px;margin:0 0 12px">Te enviamos la propuesta para <b>${esc(cl.emp)}</b> ${q.pack?`del <b>${PK.nombre}</b>`:`con el plan <b>${q.plan.nombre}</b>`}.</p>
+  <p style="font-size:13px;font-weight:700;color:${P};margin:18px 0 6px">${q.pack?"Tu situación":"Perfil de tu empresa"}</p><ul style="font-size:13px;color:#48464D;padding-left:18px;margin:0">${q.pf.map(x=>`<li style="margin:0 0 4px">${esc(x)}</li>`).join("")}</ul>
+  <p style="font-size:13px;font-weight:700;color:${P};margin:18px 0 6px">${q.pack?"Esto hacemos por ti":"Tu plan incluye"}</p><ul style="font-size:13px;color:#48464D;padding-left:18px;margin:0">${q.plan.hereda?`<li style="margin:0 0 4px"><b>${q.plan.hereda}</b></li>`:""}${inc}</ul>
   <table style="width:100%;border-collapse:collapse;margin-top:18px">${rows}</table>
-  <p style="font-size:12px;color:${G};margin:14px 0 0">Valores en UF, exentos de IVA, facturados en pesos al valor UF del día de emisión. <b>Valor referencial:</b> el precio final se confirma tras un diagnóstico de tu empresa y puede variar.</p>
+  <p style="font-size:12px;color:${G};margin:14px 0 0">Valores en UF, exentos de IVA, facturados en pesos al valor UF del día de emisión. <b>Valor referencial:</b> ${q.pack?"el trámite comienza al recibir la documentación completa; el precio final se confirma tras revisar tu caso":"el precio final se confirma tras un diagnóstico de tu empresa y puede variar"}.</p>
   ${q.link?`<p style="margin:18px 0 0"><a href="${q.link}&dl=1" style="display:inline-block;background:${P};color:#fff;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:8px;font-size:14px">Ver y descargar propuesta</a></p>`:""}
   <p style="background:#FBEAF7;border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;margin:16px 0">Propuesta válida hasta el <span style="color:${M}">${fDate(q.val)}</span>.</p>
   <p style="font-size:14px;margin:0 0 16px">Si tienes dudas, responde este correo o escríbenos por WhatsApp al +56 9 8463 0104.</p>
@@ -743,13 +1000,13 @@ function internoHTML(cl, q){
   const row=(k,v)=>`<tr><td style="padding:6px 12px 6px 0;color:#737273;font-size:13px;white-space:nowrap">${k}</td><td style="padding:6px 0;font-size:15px;font-weight:700">${v}</td></tr>`;
   return `<div style="font-family:Arial,Helvetica,sans-serif;color:#252525;max-width:600px">
   <p style="font-size:20px;font-weight:800;color:${P};margin:0 0 4px">Nueva cotización N° ${q.num}</p>
-  <p style="font-size:13px;color:#737273;margin:0 0 14px">Plan ${q.plan.nombre} · ${esc(q.valorTxt)} · válida hasta ${fDate(q.val)}</p>
+  <p style="font-size:13px;color:#737273;margin:0 0 14px">${q.pack?PK.nombre:"Plan "+q.plan.nombre} · ${esc(q.valorTxt)} · válida hasta ${fDate(q.val)}</p>
   <div style="border:2px solid ${P};border-radius:10px;padding:14px 16px;margin:0 0 16px">
   <p style="font-size:13px;font-weight:800;color:${M};margin:0 0 6px;text-transform:uppercase;letter-spacing:.5px">Datos de contacto</p>
   <table style="border-collapse:collapse">${row("Nombre",esc(cl.nom+" "+cl.ape))}${row("Empresa",esc(cl.emp)+(cl.rut?" · RUT "+esc(cl.rut):""))}${row("Celular",`<a href="tel:+56${cel}" style="color:#252525">+56 ${cel.replace(/^(\d)(\d{4})(\d{4})$/,"$1 $2 $3")}</a>`)}${row("Correo",`<a href="mailto:${esc(cl.mail)}" style="color:#252525">${esc(cl.mail)}</a>`)}${row("Mensaje",esc(cl.msg||"—"))}${row("Origen",esc(czAtribucion().origen)+(czAtribucion().utm_campaign?" · campaña "+esc(czAtribucion().utm_campaign):""))}</table>
   <p style="margin:12px 0 0">${btn(wa,"Escribirle por WhatsApp","#25D366")}${btn(mail,"Responderle por correo",P)}</p>
   </div>
-  <p style="font-size:13px;font-weight:700;color:${P};margin:0 0 6px">Perfil de la empresa</p><ul style="font-size:13px;padding-left:18px;margin:0">${q.pf.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  <p style="font-size:13px;font-weight:700;color:${P};margin:0 0 6px">${q.pack?"Situación del cliente":"Perfil de la empresa"}</p><ul style="font-size:13px;padding-left:18px;margin:0">${q.pf.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
   ${q.link?`<p style="margin:16px 0 0;font-size:13px"><a href="${q.link}" style="color:${P};font-weight:700">Ver la propuesta</a> · <a href="${q.link}&dl=1" style="color:${P};font-weight:700">Descargar PDF</a></p>`:""}
   <p style="font-size:12px;color:#737273;margin:16px 0 0">El cliente ya recibió la propuesta en su correo. Si respondes este aviso, la respuesta le llega directo al cliente.</p>
   </div>`;
