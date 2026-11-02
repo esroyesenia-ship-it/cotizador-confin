@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>
+/* Si alguien entra por la dirección antigua de Render, lo llevamos a la dirección oficial (con su propuesta o su origen) */
+(function(){ if(/onrender\.com$/i.test(location.hostname)) location.replace("https://www.confinconsultora.cl/cotiza/"+location.search+location.hash); })();
+</script>
 <!-- ===== Medición (Ninja Ads): Google Analytics, misma propiedad del sitio ===== -->
 <script>
   window.dataLayer = window.dataLayer || [];
