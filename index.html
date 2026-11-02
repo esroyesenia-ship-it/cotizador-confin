@@ -18,6 +18,7 @@
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5MN2E9FES"></script>
 <title>Cotizador Confín</title>
+<link rel="canonical" href="https://confinconsultora.cl/cotiza/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
@@ -572,6 +573,10 @@ function czDatos(){
 /* ========================================================================== */
 
 const $ = s => document.querySelector(s);
+/* Carpeta donde vive el cotizador (sirve en confinconsultora.cl/cotiza/ y en Render) */
+const BASE_DIR = (()=>{ const p=location.pathname; if(p.endsWith("/")) return p; if(/\.[a-z0-9]+$/i.test(p)) return p.replace(/[^/]*$/,""); return p+"/"; })();
+document.querySelectorAll('a[href="privacidad.html"]').forEach(a=>a.href=BASE_DIR+"privacidad.html");
+const LOGO_MAIL = /confinconsultora\.cl$/i.test(location.hostname) ? `${location.origin}${BASE_DIR}logo.jpg` : "https://raw.githubusercontent.com/esroyesenia-ship-it/cotizador-confin/main/logo.jpg";
 const LOGO = document.getElementById("logoImg").src;
 const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ufFmt = n => (Math.round(n*100)/100).toLocaleString("es-CL",{minimumFractionDigits:0,maximumFractionDigits:2});
@@ -977,7 +982,7 @@ function emailHTML(cl, q){
   else rows=`<tr><td ${td}>Plan ${q.plan.nombre} · ${esc(q.plan.sub)}</td><td ${tdr}>${ufFmt(q.v)} UF</td></tr><tr><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P}">Total mensual</td><td style="padding:12px 0;font-size:16px;font-weight:800;color:${P};text-align:right">desde ${ufFmt(q.v)} UF</td></tr><tr><td ${td}>Renta anual (${q.n} mensualidades, ${CONFIG.rentaMes})</td><td ${tdr}>${ufFmt(q.v*q.n)} UF</td></tr>`;
   const inc = q.plan.incluye.map(i=>`<li style="margin:0 0 4px">${esc(i)}</li>`).join("");
   return `<div style="font-family:Arial,Helvetica,sans-serif;color:#252525;max-width:640px;margin:0 auto">
-  <div style="background:${P};color:#fff;padding:20px 24px;border-radius:12px 12px 0 0">${CONFIG.web?`<div style="background:#fff;border-radius:8px;padding:6px 10px;display:inline-block"><img src="https://raw.githubusercontent.com/esroyesenia-ship-it/cotizador-confin/main/logo.jpg" alt="Confín Consultora Limitada" height="48" style="display:block;height:48px"></div>`:`<div style="font-size:22px;font-weight:800">Confín Consultora Limitada</div>`}<div style="margin-top:10px;font-size:13px">Cotización N° <b>${q.num}</b></div></div>
+  <div style="background:${P};color:#fff;padding:20px 24px;border-radius:12px 12px 0 0">${CONFIG.web?`<div style="background:#fff;border-radius:8px;padding:6px 10px;display:inline-block"><img src="${LOGO_MAIL}" alt="Confín Consultora Limitada" height="48" style="display:block;height:48px"></div>`:`<div style="font-size:22px;font-weight:800">Confín Consultora Limitada</div>`}<div style="margin-top:10px;font-size:13px">Cotización N° <b>${q.num}</b></div></div>
   <div style="border:1px solid #E4E2E8;border-top:0;padding:24px;border-radius:0 0 12px 12px">
   <p style="font-size:16px;margin:0 0 12px">Estimado/a <b>${esc((cl.nom+" "+cl.ape).toUpperCase())}</b>,</p>
   <p style="font-size:14px;margin:0 0 12px">Te enviamos la propuesta para <b>${esc(cl.emp)}</b> ${q.pack?`del <b>${PK.nombre}</b>`:`con el plan <b>${q.plan.nombre}</b>`}.</p>
